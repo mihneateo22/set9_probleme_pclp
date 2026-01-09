@@ -1,78 +1,118 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
 
-typedef struct Node {
-    int val;
+typedef struct Node
+{
+    int value;
     struct Node *next;
 } Node;
 
-Node* new_node(int v) {
-    Node *n = (Node*)malloc(sizeof(Node));
-    n->val = v;
-    n->next = NULL;
-    return n;
-}
+void deallocate(Node **head);
+void insert_sorted(Node **head, int new_value);
+void insert_beginning(Node **head, int new_value);
+void insert_after(Node *node, int new_value);
+void print_list(Node *head);
+void remove_element(Node **head);
 
-void push_back(Node **head, Node **tail, int v) {
-    Node *n = new_node(v);
-    if (*head == NULL) {
-        *head = *tail = n;
-    } else {
-        (*tail)->next = n;
-        *tail = n;
-    }
-}
-
-void print_list(Node *head) {
-    for (Node *p = head; p != NULL; p = p->next) {
-        printf("%d ", p->val);
-    }
-    printf("\n");
-}
-
-void remove_even(Node **head) {
-    Node **pp = head;
-    while (*pp != NULL) {
-        Node *cur = *pp;
-        if (cur->val % 2 == 0) {
-            *pp = cur->next;
-            free(cur);
-        } else {
-            pp = &cur->next;
-        }
-    }
-}
-
-void free_list(Node *head) {
-    while (head != NULL) {
-        Node *tmp = head;
-        head = head->next;
-        free(tmp);
-    }
-}
-
-int main() {
-    Node *head = NULL, *tail = NULL;
-
-    int n;
-    printf("Cate numere? ");
-    if (scanf("%d", &n) != 1) return 0;
-
-    printf("Introdu %d numere: ", n);
-    for (int i = 0; i < n; i++) {
-        int x;
-        scanf("%d", &x);
-        push_back(&head, &tail, x);
-    }
-
-    printf("Lista initiala: ");
+int main()
+{
+    Node *head = NULL;
+    insert_sorted(&head, 6);
+    insert_sorted(&head, 3);
+    insert_sorted(&head, 2);
+    insert_sorted(&head, 0);
+    remove_element(&head);
     print_list(head);
-
-    remove_even(&head);
-
-    printf("Dupa stergerea celor pare: ");
-    print_list(head);
-
-    free_list(head);
+    deallocate(&head);
     return 0;
+}
+
+void deallocate(Node **head)
+{
+    Node *curr = *head;
+    while(curr != NULL)
+    {
+        Node *temp = curr;
+        curr = curr->next;
+        free(temp);
+    }
+    *head = NULL;
+}
+
+void print_list(Node *head)
+{
+    Node *curr = head;
+    unsigned int i = 0;
+    while(curr != NULL)
+    {
+        i++;
+        printf("ELEMNTUL %u : %d\n", i, curr->value);
+        curr = curr->next;
+    }
+}
+
+void insert_beginning(Node **head, int new_value)
+{
+    Node *new_node = malloc(sizeof(Node));
+    if(new_node == NULL)
+        exit(1);
+    new_node->value = new_value;
+    new_node->next = *head;
+    *head = new_node;
+}
+
+void insert_after(Node *node, int new_value)
+{
+    Node *new_node = malloc(sizeof(Node));
+    if(new_node == NULL)
+        exit(2);
+    new_node->value = new_value;
+    new_node->next = node->next;
+    node->next = new_node;
+}
+
+void insert_sorted(Node **head, int new_value)
+{
+    if(*head == NULL || (*head)->value >= new_value)
+    {
+        insert_beginning(head, new_value);
+        return ;
+    }
+
+    Node *curr = *head;
+    while(curr->next != NULL)
+    {
+        if(curr->next->value >= new_value)
+            break;
+        curr = curr->next;
+    }
+    insert_after(curr, new_value);
+}
+
+void remove_element(Node **head)
+{
+    if(*head == NULL)
+        return ;
+
+    while((*head) != NULL && (*head)->value % 2 == 0)
+    {
+        Node *temp = *head;
+        *head = (*head)->next;
+        free(temp);
+    }
+
+    if(*head == NULL)
+        return ;
+
+    Node *curr = *head;
+    while(curr->next != NULL)
+    {
+        if(curr->next->value % 2 == 0)
+        {
+            Node *temp = curr->next;
+            curr->next = curr->next->next;
+            free(temp);
+        }
+        else curr = curr->next;
+    }
 }
