@@ -12,6 +12,7 @@ typedef struct Node
 void search_george(Node **head);
 void insert_beginning(Node **head, unsigned int new_age, char new_name[20]);
 void insert_end(Node **head, unsigned int new_age, char new_name[20]);
+void deallocate(Node **head);
 void print_list(Node **head);
 
 int main()
@@ -25,6 +26,18 @@ int main()
     // print_list(&head);
     search_george(&head);
     return 0;
+}
+
+void deallocate(Node **head)
+{
+    Node *curr = *head;
+    while(curr != NULL)
+    {
+        Node *temp = curr;
+        curr = curr->next;
+        free(temp);
+    }
+    *head = NULL;
 }
 
 void insert_beginning(Node **head, unsigned int new_age, char new_name[20])
