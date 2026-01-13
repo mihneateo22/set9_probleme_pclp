@@ -16,6 +16,7 @@ void print_list(Node **head);
 float medie_student_separat(Node *head);
 float medie_grupa(Node **head);
 void premiant(Node **head);
+void insert_end_then_sort(Node **head);
 
 int main()
 {
@@ -72,10 +73,11 @@ int main()
             }
         }
     }
-    print_list(&head);
     printf("media generala a grupei de studenti este : %f\n", medie_grupa(&head));
     printf("\n");
-    premiant(&head);
+    // premiant(&head);
+    insert_end_then_sort(&head);
+    print_list(&head);
     deallocate(&head);
     return 0;
 }
@@ -140,6 +142,71 @@ void premiant(Node **head)
     }
 }
 
+// intrebare laborator programare
+void insert_end_then_sort(Node **head)
+{
+    char name[21];
+    int nr_mat, cod_mat[3];
+    float med_mat[3];
+    Node *new_node = malloc(sizeof(Node)), *curr2 = NULL;
+    if(new_node == NULL)
+        exit(1);
+    printf("introduceti numele studentului transferat : ");
+    fgets(name, 21, stdin);
+    name[strcspn(name, "\n")] = '\0';
+    strcpy(new_node->nume, name);
+    printf("introduceti numarul matricol : ");
+    scanf("%d", &nr_mat);
+    new_node->nr_matricol = nr_mat;
+    getchar();
+    for(unsigned int i = 0; i < 3; i++)
+    {
+        printf("cod materie %u : ", i + 1);
+        scanf("%d", &cod_mat[i]);
+        new_node->cod_materie[i] = cod_mat[i];
+    }
+    getchar();
+    for(unsigned int i = 0; i < 3; i++)
+    {   
+        printf("medie materie %u : ", i + 1);
+        scanf("%f", &med_mat[i]);
+        new_node->medie_materie[i] = med_mat[i];
+    }
+
+    if(*head == NULL)
+    {
+        *head = new_node;
+        return ;
+    }
+
+    Node *curr = *head;
+    while(curr->next != NULL)
+    {
+        curr = curr->next;
+    }
+    curr->next = new_node;
+    new_node->next = NULL;
+
+    curr = *head;
+    if(strcmp(curr->nume, new_node->nume) > 0)
+    {
+        new_node->next = curr;
+        *head = new_node;
+        curr = curr->next;
+    }
+    Node *prev = *head;
+    while(curr != NULL)
+    {
+        if(strcmp(curr->nume, new_node->nume) > 0)
+        {
+            new_node->next = prev->next;
+            prev->next = new_node;
+        }
+        prev = prev->next;
+        curr = curr->next;
+    }
+}
+
 void deallocate(Node **head)
 {
     Node *curr = *head;
@@ -160,7 +227,7 @@ void print_list(Node **head)
     while(curr != NULL)
     {
         i++;
-        printf("numele persoana %u : ", i);
+        printf("nume persoana %u : ", i);
         puts(curr->nume);
         printf("numar matricol persoana %u : %d\n", i, curr->nr_matricol);
         for(j = 0; j < 3; j++)
