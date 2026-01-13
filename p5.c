@@ -17,6 +17,7 @@ float medie_student_separat(Node *head);
 float medie_grupa(Node **head);
 void premiant(Node **head);
 void insert_end_then_sort(Node **head);
+void remove_element(Node **head);
 
 int main()
 {
@@ -77,6 +78,7 @@ int main()
     printf("\n");
     // premiant(&head);
     insert_end_then_sort(&head);
+    remove_element(&head);
     print_list(&head);
     deallocate(&head);
     return 0;
@@ -142,13 +144,14 @@ void premiant(Node **head)
     }
 }
 
-// intrebare laborator programare
+// intrebare laborator programare : vreau sa mi se clarifice ca este bine
+
 void insert_end_then_sort(Node **head)
 {
     char name[21];
     int nr_mat, cod_mat[3];
     float med_mat[3];
-    Node *new_node = malloc(sizeof(Node)), *curr2 = NULL;
+    Node *new_node = malloc(sizeof(Node));
     if(new_node == NULL)
         exit(1);
     printf("introduceti numele studentului transferat : ");
@@ -187,24 +190,41 @@ void insert_end_then_sort(Node **head)
     curr->next = new_node;
     new_node->next = NULL;
 
+// de aici incepe sortarea, pana aici era bagat la coada
+
+    if(strcmp(curr->nume, new_node->nume) < 0)
+        return;
+
+    curr->next = NULL;
     curr = *head;
     if(strcmp(curr->nume, new_node->nume) > 0)
     {
         new_node->next = curr;
         *head = new_node;
-        curr = curr->next;
+        return ;
     }
     Node *prev = *head;
+    curr = prev->next;
     while(curr != NULL)
     {
         if(strcmp(curr->nume, new_node->nume) > 0)
         {
-            new_node->next = prev->next;
+            new_node->next = curr;
             prev->next = new_node;
+            return ;
         }
         prev = prev->next;
         curr = curr->next;
     }
+}
+
+void remove_element(Node **head)
+{
+    if(*head == NULL || (*head)->next == NULL || (*head)->next->next == NULL)
+        return ;
+    Node *temp = (*head)->next->next;
+    (*head)->next->next = temp->next;
+    free(temp);
 }
 
 void deallocate(Node **head)
