@@ -144,8 +144,6 @@ void premiant(Node **head)
     }
 }
 
-// intrebare laborator programare : vreau sa mi se clarifice ca este bine
-
 void insert_end_then_sort(Node **head)
 {
     char name[21];
